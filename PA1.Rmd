@@ -1,0 +1,78 @@
+---
+title: "Project 1"
+output: html_document
+---
+
+
+##Loading and preprocessing the data
+```{r}
+setwd("C:\\Users\\rripperda\\Documents\\GitHub\\RepData_PeerAssessment1")
+data <- read.csv("activity\\activity.csv")
+```
+
+##Histogram of the total number of steps taken each day
+```{r}
+library(ggplot2)
+
+dfNoNA = data[complete.cases(data),]
+
+dailyTotals = aggregate(dfNoNA$steps, list(dfNoNA$date), sum)
+
+dailyTotals$Group.1 = as.Date(dailyTotals$Group.1, format = "%Y-%m-%d")
+
+ggplot(dailyTotals, aes(x=dailyTotals$x)) + geom_histogram()
+```
+
+##Mean and median total number of steps taken per day
+
+```{r}
+mean(dailyTotals$x)
+
+median(dailyTotals$x)
+```
+
+##Time series plot of the 5-minute interval (x-axis) and the average number of steps taken, averaged across all days (y-axis)
+```{r}
+intervalAvgs = aggregate(dfNoNA$steps, list(dfNoNA$interval), mean)
+
+plot(intervalAvgs, type="l")
+```
+
+
+##5-minute interval containing the maximum number of steps
+```{r}
+intervalAvgs[intervalAvgs$x == max(intervalAvgs$x),1]
+```
+
+##Total number of missing values in the dataset
+```{r}
+nrow(data[is.na(data$steps),])
+
+```
+
+##New dataset equal to the original dataset but with the missing data filled in
+```{r}
+getIntervalMean <- function(x) {
+    intervalAvgs[intervalAvgs$Group.1==x,2]
+}
+
+naIndex <-data[is.na(data),]
+
+for(i in 1:nrow(naIndex)) {
+    
+    data[(data$date==naIndex$date[i] & data$interval==naIndex$interval[i]),]$steps <- getIntervalMean(naIndex$interval[i])
+
+    }
+
+dailyTotalsImputed = aggregate(data$steps, list(data$date), sum)
+
+dailyTotalsImputed$Group.1 = as.Date(dailyTotalsImputed$Group.1, format = "%Y-%m-%d")
+
+ggplot(dailyTotalsImputed, aes(x=dailyTotalsImputed$x)) + geom_histogram()
+
+mean(dailyTotalsImputed$x)
+
+median(dailyTotalsImputed$x)
+
+
+```
