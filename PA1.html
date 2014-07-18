@@ -125,6 +125,18 @@ ggplot(dailyTotalsImputed, aes(x=dailyTotalsImputed$x)) + geom_histogram()</code
 <pre class="r"><code>median(dailyTotalsImputed$x)</code></pre>
 <pre><code>## [1] 10766</code></pre>
 </div>
+<div id="create-a-new-factor-variable-in-the-dataset-with-two-levels---weekday-and-weekend-indicating-whether-a-given-date-is-a-weekday-or-weekend-day." class="section level2">
+<h2>Create a new factor variable in the dataset with two levels - “weekday” and “weekend” indicating whether a given date is a weekday or weekend day.</h2>
+<pre class="r"><code>daysOfWeek &lt;- c(&quot;Monday&quot;, &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Thursday&quot;, &quot;Friday&quot;)
+
+wd &lt;- factor(c(&quot;weekday&quot;, &quot;weekend&quot;))
+
+data$weekday &lt;- wd[1]
+
+data$weekdayKey &lt;- ifelse(weekdays(as.Date(data$date)) %in% daysOfWeek, wd[1], wd[2])
+
+data[data$weekdayKey==2,]$weekday &lt;- wd[2]</code></pre>
+</div>
 
 
 </div>
